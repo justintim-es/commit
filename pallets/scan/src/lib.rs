@@ -4,19 +4,27 @@
 /// Learn more about FRAME and the core library of Substrate FRAME pallets:
 /// https://substrate.dev/docs/en/knowledgebase/runtime/frame
 
-use frame_support::{decl_module, decl_storage, decl_event, decl_error, dispatch, traits::Get};
+use frame_support::{decl_module, decl_storage, decl_event, decl_error, dispatch, ensure, debug, weights::{Pays, DispatchClass, Weight}, traits::{Get, Currency}};
 use frame_system::ensure_signed;
-
+use frame_system::ensure_root;
+use sp_std::vec::Vec;
+#[cfg(not(feature = "std"))]
+use sp_std::prelude::vec;
+use sp_runtime::{
+	offchain as texoffchain,
+	offchain::http
+};
+use codec::{Encode, Decode};
 #[cfg(test)]
 mod mock;
 
 #[cfg(test)]
 mod tests;
-
 /// Configure the pallet by specifying the parameters and types on which it depends.
 pub trait Trait: frame_system::Trait {
 	/// Because this pallet emits events, it depends on the runtime's definition of an event.
 	type Event: From<Event<Self>> + Into<<Self as frame_system::Trait>::Event>;
+	type Currency: Currency<Self::AccountId> + Send + Sync;
 }
 
 // The pallet's runtime storage items.
@@ -29,6 +37,11 @@ decl_storage! {
 		// Learn more about declaring storage items:
 		// https://substrate.dev/docs/en/knowledgebase/runtime/storage#declaring-storage-items
 		Something get(fn something): Option<u32>;
+		Owner config(aschac): T::AccountId;
+		Reward config(reschew): u32;
+		Register: map hasher(blake2_128_concat) T::AccountId => bool;
+		Accounts: map hasher(blake2_128_concat) T::AccountId => Option<Vec<T::AccountId>>;
+		Accesses: double_map hasher(blake2_128_concat) T::AccountId, hasher(blake2_128_concat) Vec<u8> => bool;
 	}
 }
 
@@ -49,6 +62,8 @@ decl_error! {
 		NoneValue,
 		/// Errors should have helpful documentation associated with them.
 		StorageOverflow,
+		UnknownAccount,
+		NoAccess,
 	}
 }
 
@@ -62,6 +77,41 @@ decl_module! {
 
 		// Events must be initialized if they are used by the pallet.
 		fn deposit_event() = default;
+		#[weight = (100_000, DispatchClass::Normal, Pays::No)]
+		pub fn access(origin, account: T::AccountId, pass: Vec<u8>) -> dispatch::DispatchResult {
+			let origin = ensure_root(origin)?;
+			ensure!(<Register<T>>::get(&account) || <Owner<T>>::get() == account, <Error<T>>::UnknownAccount);
+			<Accesses<T>>::insert(account, pass, true);
+			// T::Currency::deposit_creating(&<Owner<T>>::get(), 250000000.into()); 
+			Ok(()) 
+		}
+		#[weight = (100_000, DispatchClass::Normal, Pays::No)]
+		pub fn register(origin, account: T::AccountId, pass: Vec<u8>) -> dispatch::DispatchResult {
+			let origin = ensure_signed(origin)?;
+			ensure!(<Register<T>>::get(&account) || <Owner<T>>::get() == account, <Error<T>>::UnknownAccount);
+			ensure!(<Accesses<T>>::get(&account, pass), <Error<T>>::NoAccess);
+			<Register<T>>::insert(&origin, true);
+			T::Currency::deposit_creating(&account, Reward::get().into());
+			match <Accounts<T>>::get(&account) {
+				Some(mut accs) => {
+					for acc in &accs {
+						T::Currency::deposit_creating(&acc, Reward::get().into());
+					}
+					accs.push(account);
+					<Accounts<T>>::insert(&origin, accs);
+				},
+				None => {
+					let mut accounts: Vec<T::AccountId> = Vec::new();
+					accounts.push(account);
+					<Accounts<T>>::insert(&origin, accounts);
+				}
+			}
+			if Reward::get() > 1 {
+				Reward::mutate(|n| *n -= 1);
+			}
+			Ok(())
+		}
+
 
 		/// An example dispatchable that takes a singles value as a parameter, writes the value to
 		/// storage and emits an event. This function must be dispatched by a signed extrinsic.

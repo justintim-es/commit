@@ -40,7 +40,6 @@ pub use frame_support::{
 };
 
 /// Import the template pallet.
-pub use template;
 
 /// An index to a block.
 pub type BlockNumber = u32;
@@ -258,12 +257,14 @@ impl pallet_sudo::Trait for Runtime {
 	type Call = Call;
 }
 
-/// Configure the pallet template in pallets/template.
-impl template::Trait for Runtime {
-	type Event = Event;
-}
+
 impl participate::Trait for Runtime {
 	type Event = Event;
+	type Currency = Balances;
+}
+impl scan::Trait for Runtime {
+	type Event = Event;
+	type Currency = Balances;
 }
 parameter_types! {
 	pub const DisabledValidatorsThreshold: Perbill = Perbill::from_percent(17);
@@ -279,6 +280,16 @@ impl pallet_session::Trait for Runtime {
 	type Keys = opaque::SessionKeys;
 	type DisabledValidatorsThreshold = DisabledValidatorsThreshold;
 	type WeightInfo = ();
+}
+parameter_types! {
+	pub const UncleGenerations: BlockNumber = 5;
+}
+
+impl pallet_authorship::Trait for Runtime {
+	type FindAuthor = pallet_session::FindAccountFromAuthorIndex<Self, Aura>;
+	type UncleGenerations = UncleGenerations;
+	type FilterUncle = ();
+	type EventHandler = ();
 }
 
 // Create the runtime by composing the FRAME pallets that were previously configured.
@@ -297,9 +308,10 @@ construct_runtime!(
 		TransactionPayment: pallet_transaction_payment::{Module, Storage},
 		Sudo: pallet_sudo::{Module, Call, Config<T>, Storage, Event<T>},
 		// Include the custom logic from the template pallet in the runtime.
-		TemplateModule: template::{Module, Call, Storage, Event<T>},
-		Participate: participate::{Module, Call, Storage, Event<T>, Config<T>},
-		Session: pallet_session::{Module, Call, Storage, Event, Config<T>},	
+		Participate: participate::{Module, Call, Storage, Event<T>, Config<T> },
+		Session: pallet_session::{Module, Call, Storage, Event, Config<T> },	
+		Scan: scan::{Module, Call, Storage, Event<T> },
+		Authorship: pallet_authorship::{Module, Call, Storage, Inherent},
 	}
 );
 

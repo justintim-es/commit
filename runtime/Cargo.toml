@@ -165,18 +165,23 @@ git = 'https://github.com/paritytech/substrate.git'
 tag = 'v2.0.0-rc6'
 version = '2.0.0-rc6'
 
-[dependencies.template]
-default-features = false
-package = 'pallet-template'
-path = '../pallets/template'
-version = '2.0.0-rc6'
-
 [dependencies.participate]
 default-features = false
 package = 'pallet-participate'
 path = '../pallets/participate'
 version = '2.0.0-rc6'
 
+[dependencies.scan]
+default-features = false
+package = 'pallet-scan'
+path = '../pallets/scan'
+version = '2.0.0-rc6'
+
+[dependencies.pallet-authorship]
+default-features = false
+git = 'https://github.com/paritytech/substrate.git'
+tag = 'v2.0.0-rc6'
+version = '2.0.0-rc6'
 
 [features]
 default = ['std']
@@ -206,9 +211,10 @@ std = [
     'sp-std/std',
     'sp-transaction-pool/std',
     'sp-version/std',
-    'template/std',
     'participate/std',
     'pallet-session/std',
+    'scan/std',
+    'pallet-authorship/std',
 ]
 
 [build-dependencies.wasm-builder-runner]

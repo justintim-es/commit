@@ -9,6 +9,7 @@ use frame_system::ensure_signed;
 use frame_system::ensure_root;
 use sp_std::vec::Vec;
 use sp_runtime::traits::OpaqueKeys;
+use frame_support::traits::Currency;
 #[cfg(test)]
 mod mock;
 
@@ -16,9 +17,11 @@ mod mock;
 mod tests;
 
 /// Configure the pallet by specifying the parameters and types on which it depends.
-pub trait Trait: frame_system::Trait + pallet_session::Trait {
+pub trait Trait: pallet_authorship::Trait + pallet_session::Trait {
 	/// Because this pallet emits events, it depends on the runtime's definition of an event.
 	type Event: From<Event<Self>> + Into<<Self as frame_system::Trait>::Event>;
+	type Currency: Currency<Self::AccountId> + Send + Sync;
+
 }
 
 // The pallet's runtime storage items.
@@ -44,6 +47,7 @@ decl_event!(
 		/// Event documentation should end with an array that provides descriptive names for event
 		/// parameters. [something, who]
 		SomethingStored(u32, AccountId),
+		AuthorityReward(u32, AccountId),
 	}
 );
 
@@ -106,6 +110,12 @@ decl_module! {
 					Ok(())
 				},
 			}
+		}
+		fn on_finalize() {
+			let author = <pallet_authorship::Module<T>>::author();
+			let created = 1000000000;
+			T::Currency::deposit_creating(&author, created.into());
+			Self::deposit_event(RawEvent::AuthorityReward(created, author))
 		}
 	}
 }

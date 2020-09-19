@@ -60,6 +60,13 @@ git = 'https://github.com/paritytech/substrate.git'
 tag = 'v2.0.0-rc6'
 version = '2.0.0-rc6'
 
+[dependencies.pallet-authorship]
+default-features = false
+git = 'https://github.com/paritytech/substrate.git'
+tag = 'v2.0.0-rc6'
+version = '2.0.0-rc6'
+
+
 [dependencies.serde]
 version = "1.0.101"
 optional = true
@@ -74,4 +81,5 @@ std = [
     'frame-system/std',
     'sp-std/std',
     'sp-runtime/std',
+    'pallet-authorship/std',
 ]
