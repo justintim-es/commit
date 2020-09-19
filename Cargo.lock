@@ -3311,6 +3311,9 @@ dependencies = [
  "pallet-aura",
  "pallet-authorship",
  "pallet-balances",
+ "pallet-contracts",
+ "pallet-contracts-primitives",
+ "pallet-contracts-rpc-runtime-api",
  "pallet-grandpa",
  "pallet-participate",
  "pallet-randomness-collective-flip",
@@ -3527,6 +3530,49 @@ dependencies = [
  "frame-system",
  "parity-scale-codec",
  "serde",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "pallet-contracts"
+version = "2.0.0-rc6"
+source = "git+https://github.com/paritytech/substrate.git?tag=v2.0.0-rc6#be8bb186d87b9d2b47a2907c9b51ae1e252362c3"
+dependencies = [
+ "bitflags",
+ "frame-support",
+ "frame-system",
+ "pallet-contracts-primitives",
+ "parity-scale-codec",
+ "parity-wasm",
+ "pwasm-utils",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-sandbox",
+ "sp-std",
+ "wasmi-validation",
+]
+
+[[package]]
+name = "pallet-contracts-primitives"
+version = "2.0.0-rc6"
+source = "git+https://github.com/paritytech/substrate.git?tag=v2.0.0-rc6#be8bb186d87b9d2b47a2907c9b51ae1e252362c3"
+dependencies = [
+ "parity-scale-codec",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "pallet-contracts-rpc-runtime-api"
+version = "0.8.0-rc6"
+source = "git+https://github.com/paritytech/substrate.git?tag=v2.0.0-rc6#be8bb186d87b9d2b47a2907c9b51ae1e252362c3"
+dependencies = [
+ "pallet-contracts-primitives",
+ "parity-scale-codec",
+ "sp-api",
  "sp-runtime",
  "sp-std",
 ]
@@ -6245,6 +6291,19 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
+]
+
+[[package]]
+name = "sp-sandbox"
+version = "0.8.0-rc6"
+source = "git+https://github.com/paritytech/substrate.git?tag=v2.0.0-rc6#be8bb186d87b9d2b47a2907c9b51ae1e252362c3"
+dependencies = [
+ "parity-scale-codec",
+ "sp-core",
+ "sp-io",
+ "sp-std",
+ "sp-wasm-interface",
+ "wasmi",
 ]
 
 [[package]]
