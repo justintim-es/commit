@@ -14,6 +14,7 @@ use sp_runtime::{
 };
 use sp_runtime::traits::{
 	BlakeTwo256, Block as BlockT, IdentityLookup, Verify, IdentifyAccount, NumberFor, Saturating,
+	OpaqueKeys, ConvertInto
 };
 use sp_api::impl_runtime_apis;
 use sp_consensus_aura::sr25519::AuthorityId as AuraId;
@@ -261,6 +262,24 @@ impl pallet_sudo::Trait for Runtime {
 impl template::Trait for Runtime {
 	type Event = Event;
 }
+impl participate::Trait for Runtime {
+	type Event = Event;
+}
+parameter_types! {
+	pub const DisabledValidatorsThreshold: Perbill = Perbill::from_percent(17);
+}
+impl pallet_session::Trait for Runtime {
+	type Event = Event;
+	type ValidatorId = <Self as frame_system::Trait>::AccountId;
+	type ValidatorIdOf = ConvertInto;
+	type ShouldEndSession = Participate;
+	type NextSessionRotation = Participate;
+	type SessionManager = Participate;
+	type SessionHandler = <opaque::SessionKeys as OpaqueKeys>::KeyTypeIdProviders;
+	type Keys = opaque::SessionKeys;
+	type DisabledValidatorsThreshold = DisabledValidatorsThreshold;
+	type WeightInfo = ();
+}
 
 // Create the runtime by composing the FRAME pallets that were previously configured.
 construct_runtime!(
@@ -279,6 +298,8 @@ construct_runtime!(
 		Sudo: pallet_sudo::{Module, Call, Config<T>, Storage, Event<T>},
 		// Include the custom logic from the template pallet in the runtime.
 		TemplateModule: template::{Module, Call, Storage, Event<T>},
+		Participate: participate::{Module, Call, Storage, Event<T>, Config<T>},
+		Session: pallet_session::{Module, Call, Storage, Event, Config<T>},	
 	}
 );
 
