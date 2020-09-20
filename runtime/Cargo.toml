@@ -190,14 +190,14 @@ package = 'pallet-contracts'
 tag = 'v2.0.0-rc6'
 version = '2.0.0-rc6'
 
-[dependencies.contracts-primitives]
+[dependencies.pallet-contracts-primitives]
 git = 'https://github.com/paritytech/substrate.git'
 default-features = false
 package = 'pallet-contracts-primitives'
 tag = 'v2.0.0-rc6'
 version = '2.0.0-rc6'
 
-[dependencies.contracts-rpc-runtime-api]
+[dependencies.pallet-contracts-rpc-runtime-api]
 git = 'https://github.com/paritytech/substrate.git'
 default-features = false
 package = 'pallet-contracts-rpc-runtime-api'
@@ -237,8 +237,8 @@ std = [
     'scan/std',
     'pallet-authorship/std',
     'contracts/std',
-    'contracts-primitives/std',
-    'contracts-rpc-runtime-api/std',
+    'pallet-contracts-primitives/std',
+    'pallet-contracts-rpc-runtime-api/std',
 ]
 
 [build-dependencies.wasm-builder-runner]
