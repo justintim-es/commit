@@ -183,7 +183,7 @@ git = 'https://github.com/paritytech/substrate.git'
 tag = 'v2.0.0-rc6'
 version = '2.0.0-rc6'
 
-[dependencies.contracts]
+[dependencies.pallet-contracts]
 git = 'https://github.com/paritytech/substrate.git'
 default-features = false
 package = 'pallet-contracts'
@@ -236,7 +236,7 @@ std = [
     'pallet-session/std',
     'scan/std',
     'pallet-authorship/std',
-    'contracts/std',
+    'pallet-contracts/std',
     'pallet-contracts-primitives/std',
     'pallet-contracts-rpc-runtime-api/std',
 ]

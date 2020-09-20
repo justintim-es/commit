@@ -38,7 +38,7 @@ pub use frame_support::{
 		constants::{BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight, WEIGHT_PER_SECOND},
 	},
 };
-pub use contracts::Schedule as ContractsSchedule;
+pub use pallet_contracts::Schedule as ContractsSchedule;
 use pallet_contracts_rpc_runtime_api::ContractExecResult;
 pub const MILLICENTS: Balance = 1_000_000_000;
 pub const CENTS: Balance = 1_000 * MILLICENTS;
@@ -303,22 +303,22 @@ parameter_types! {
     pub const SurchargeReward: Balance = 150 * MILLICENTS;
 }
 
-impl contracts::Trait for Runtime {
+impl pallet_contracts::Trait for Runtime {
     type Time = Timestamp;
     type Randomness = RandomnessCollectiveFlip;
     type Currency = Balances;
     type Event = Event;
-    type DetermineContractAddress = contracts::SimpleAddressDeterminer<Runtime>;
-    type TrieIdGenerator = contracts::TrieIdFromParentCounter<Runtime>;
+    type DetermineContractAddress = pallet_contracts::SimpleAddressDeterminer<Runtime>;
+    type TrieIdGenerator = pallet_contracts::TrieIdFromParentCounter<Runtime>;
     type RentPayment = ();
-    type SignedClaimHandicap = contracts::DefaultSignedClaimHandicap;
+    type SignedClaimHandicap = pallet_contracts::DefaultSignedClaimHandicap;
     type TombstoneDeposit = TombstoneDeposit;
-    type StorageSizeOffset = contracts::DefaultStorageSizeOffset;
+    type StorageSizeOffset = pallet_contracts::DefaultStorageSizeOffset;
     type RentByteFee = RentByteFee;
     type RentDepositOffset = RentDepositOffset;
     type SurchargeReward = SurchargeReward;
-    type MaxDepth = contracts::DefaultMaxDepth;
-    type MaxValueSize = contracts::DefaultMaxValueSize;
+    type MaxDepth = pallet_contracts::DefaultMaxDepth;
+    type MaxValueSize = pallet_contracts::DefaultMaxValueSize;
     type WeightPrice = pallet_transaction_payment::Module<Self>;
 }
 
@@ -342,7 +342,7 @@ construct_runtime!(
 		Session: pallet_session::{Module, Call, Storage, Event, Config<T> },	
 		Scan: scan::{Module, Call, Storage, Event<T> },
 		Authorship: pallet_authorship::{Module, Call, Storage, Inherent},
-		Contracts: contracts::{Module, Call, Config, Storage, Event<T>}
+		Contracts: pallet_contracts::{Module, Call, Config, Storage, Event<T>}
 	}
 );
 
@@ -568,5 +568,4 @@ impl_runtime_apis! {
 			Contracts::rent_projection(address)
 		}
 	}	
-	
 }

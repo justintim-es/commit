@@ -173,7 +173,7 @@ fn testnet_genesis(
 		participate: Some(ParticipateConfig {
 			initial_validators: initial_authorities.iter().map(|x| (x.0.clone())).collect()
 		}),
-		contracts: Some(ContractsConfig {
+		pallet_contracts: Some(ContractsConfig {
             current_schedule: ContractsSchedule {
                     enable_println,
                     ..Default::default()

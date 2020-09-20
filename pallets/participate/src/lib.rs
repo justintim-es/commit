@@ -119,11 +119,6 @@ decl_module! {
 		}
 	}
 }
-impl<T: Trait> pallet_session::ShouldEndSession<T::BlockNumber> for Module<T> {
-    fn should_end_session(now: T::BlockNumber) -> bool {
-        true
-    }
-}
 impl<T: Trait> pallet_session::SessionManager<T::AccountId> for Module<T> {
     fn new_session(new_index: u32) -> Option<Vec<T::AccountId>> {
         Some(<Validators<T>>::get())
@@ -135,9 +130,18 @@ impl<T: Trait> pallet_session::SessionManager<T::AccountId> for Module<T> {
 
     }
 }
+impl<T: Trait> pallet_session::ShouldEndSession<T::BlockNumber> for Module<T> {
+    fn should_end_session(now: T::BlockNumber) -> bool {
+		if now % 10.into() == 0.into() {
+			true
+		} else {
+			false
+		}
+    }
+}
 impl<T: Trait> frame_support::traits::EstimateNextSessionRotation<T::BlockNumber> for Module<T> {
     fn estimate_next_session_rotation(now: T::BlockNumber) -> Option<T::BlockNumber> {
-        Some(now)
+        Some(now + 10.into() - now % 10.into())
     }
     fn weight(now: T::BlockNumber) -> Weight {
         0
